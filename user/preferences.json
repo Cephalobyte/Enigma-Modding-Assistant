@@ -1,0 +1,28 @@
+{
+	"META": {
+		"legal_mode": false,
+		"game_version": [1, 31, 0]
+	},
+	"PERSONAL_DIRECTORY_PATHS": {
+		"encrypt_dir": ".\\converted",
+		"decrypt_dir": ".\\converted",
+		"quickfix_dir": ".\\converted",
+		"game_dir": "",
+		"game_data_dir": ""
+	},
+	"DYNAMIC_PREFS": {
+		"lock": false,
+		"main": {
+		},
+		"decrypter": {
+		},
+		"encrypter": {
+			"warnexisting": false
+		},
+		"quickmod": {
+		},
+		"quickfix": {
+			"autozip": false
+		}
+	}
+}
