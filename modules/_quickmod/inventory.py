@@ -84,7 +84,7 @@ def inventory(
 
 				case 'ok':
 					progress("Saving inventories")
-					selection.setdatas(datas)
+					selection.setdatas(datas, True)
 					progress("Inventories saved", True)
 					break
 

@@ -59,7 +59,7 @@ def mapreveal(
 
 				case 'ok':
 					progress("Saving map reveal")
-					selection.setdatas(datas)
+					selection.setdatas(datas, True)
 					progress("Map reveal saved!", True)
 					break
 

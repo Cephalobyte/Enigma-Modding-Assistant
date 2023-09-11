@@ -39,6 +39,7 @@ def micromapindexorder(width:int, height:int) ->list[int]:
 	single character to draw 2 tiles above eachother
 	"""
 	order = []
+
 	for y in range(-(height // -2)): #------------------------------------------for each 2 rows,
 		y *= 2
 		for x in range(width): #------------------------------------------------for each columns,
@@ -149,6 +150,25 @@ def rowsfromlist(
 		] #===================================================================== ▲▲▲ AUTO WIDTH MODE ▲▲▲ ===============
 	
 	return rows
+
+
+def getnestedvalue(dct:dict, keypath:list, defau=None):
+	"""Get the value from a nested dictionary from a path consisted of a list of
+	keys
+
+	:param dct: The dictionary
+	:param keypath: The keys to search within the nested dictionary
+	:param defau: default value to return if one key is invalid
+	"""
+	nesteddict = dct
+
+	for k in keypath:
+		try:	
+			nesteddict = nesteddict[k]
+		except KeyError:
+			return defau
+	
+	return nesteddict
 
 
 #============ Sorting ==================================================================================================

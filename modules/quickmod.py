@@ -140,7 +140,7 @@ def quickmod(
 
 				breadcrumbs.append(choice)
 				inventory(
-					QUICKMOD_MENUS['inv']['info'],
+					QUICKMOD_MENUS[choice]['info'],
 					selection,
 					basecrumbs+breadcrumbs
 				)

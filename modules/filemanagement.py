@@ -10,7 +10,8 @@ sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------
 
 from modules.utils import (
 	visiblen,
-	invisiblen
+	invisiblen,
+	getnestedvalue
 )
 #to prevent circular dependency with dialog.py, importing functions from the
 #module is done in each function that requires it
@@ -69,28 +70,20 @@ class SelectionInfo(NamedTuple):
 	discriminators: list[str|int|bool] = []
 
 
-	def _getvalidtypes(self) ->list[MPFileType]:
+	def _getvalidtypes(self) ->dict[int,MPFileType]:
 		disc = self.discriminators
 		discC = [c for c in disc if type(c) is bool] #--------------------------discriminators for compression
-		
-		return [ #--------------------------------------------------------------list of MPFileType not discriminated
-			mpft for mpft in self.file_types
+
+		return { #--------------------------------------------------------------dictionary of MPFileType not discriminated
+			i:mpft for i, mpft in enumerate(self.file_types)
 			if mpft.type not in disc
 			and mpft.is_compressed not in discC
-		]
-
+		}
+		
 	
 	def getsummary(self) ->SelectionSummary:
 		"""Obtain a simplified summary of the valid contents of the selection"""
-		# disc = self.discriminators
-		# discC = [c for c in disc if type(c) is bool] #--------------------------discriminators for compression
-		
-		# validtypes = [ #--------------------------------------------------------list of MPFileType not discriminated
-		# 	mpft for mpft in self.file_types
-		# 	if mpft.type not in disc
-		# 	and mpft.is_compressed not in discC
-		# ]
-		validtypes = self._getvalidtypes()
+		validtypes = self._getvalidtypes().values()
 		uniquetypes = list(set(validtypes)) #-----------------------------------list of unique valid MPFileType
 
 		#stolen from https://stackoverflow.com/a/8081580
@@ -112,11 +105,9 @@ class SelectionInfo(NamedTuple):
 		limited by the discriminators
 		"""
 		datas = {}
-		# fTypes = self.file_types
 		fPaths = self.file_paths
-		# discs = self.discriminators
 
-		for i, ft in enumerate(self._getvalidtypes()):
+		for i, ft in self._getvalidtypes().items():
 			if ft.is_compressed:
 				data = mptodict(fPaths[i])
 			else:
@@ -127,39 +118,17 @@ class SelectionInfo(NamedTuple):
 
 			datas[i] = data
 
-		# for i, fp in enumerate(self.file_paths):
-		# 	if (
-		# 		fTypes[i].type not in discs and
-		# 		fTypes[i].is_compressed not in discs
-		# 	):
-		# 		if fTypes[i].is_compressed:
-		# 			data = mptodict(fp)
-		# 		else:
-		# 			data = jsontodict(fp)
-
-		# 		if data is None:
-		# 			continue
-
-		# 		datas[i] = data
-
-
 		return datas
 	
 
-	def setdatas(self, datas:dict[int, list[dict]]):
+	def setdatas(self, datas:dict[int, list[dict]], overwrite:bool=False):
 		fPaths = self.file_paths
-		fTypes = self.file_types
-		discs = self.discriminators
 
-		for i, d in datas.items():
-			if (
-				fTypes[i].type not in discs and
-				fTypes[i].is_compressed not in discs
-			):
-				if fTypes[i].is_compressed:
-					dicttomp(d, fPaths[i])
-				else:
-					dicttojson(d, fPaths[i])
+		for i, ft in self._getvalidtypes().items():
+			if ft.is_compressed:
+				dicttomp(datas[i], fPaths[i], overwrite)
+				continue
+			dicttojson(datas[i], fPaths[i], overwrite)
 
 	
 	def send(
@@ -172,6 +141,17 @@ class SelectionInfo(NamedTuple):
 		self.discriminators.extend(
 			menudiscriminators.get(option, [])
 		)
+
+	# def send2(
+	# 	self,
+	# 	menu,
+	# 	optionpath:list[int|str],
+	# ):
+	# 	"""Update the selection's discriminators from the chosen menu option for
+	# 	disabling the correct submenu options when sending it"""
+	# 	self.discriminators.extend(
+	# 		getnestedvalue(menu, optionpath)
+	# 	)
 	
 
 	def reclaim(self, discriminators:list[str|int|bool]=[]):

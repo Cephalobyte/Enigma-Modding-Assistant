@@ -132,7 +132,7 @@ def palettelisteditor(
 
 			case 'ok':
 				progress("Saving palette order")
-				selection.setdatas(datas)
+				selection.setdatas(datas, True)
 				progress("Palette order saved!", True)
 				break
 
