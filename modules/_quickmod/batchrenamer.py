@@ -4,11 +4,10 @@ from modules.menus import MenuInfo
 from modules.dialog import (
 	header,
 	breadcrumbtrail,
+	steptodo,
+	protip,
 	progress,
-	# woops,
-	pageinfo,
-	pe2c,
-	# listdialog,
+	textdialog,
 	menudialog,
 )
 from modules.filemanagement import (
@@ -19,22 +18,22 @@ from modules.utils import (
 	terminalsize,
 	visiblen,
 	rowsfromlist,
+	getnestedvalue,
+	setnestedvalue
 )
 
-
-DATAPATHS = {
+DATAPATHS:dict[str,dict[str,list|None]] = {
 	'title': {
-		'room': '[0]["GENERAL"]["name"]',
-		'world': '[0]["name"]',
-		'save': '[0]["ENIGMA"]["world_name"]'
+		'room': [0, "GENERAL", "name"],
+		'world': [0, "name"],
+		'save': [0, "ENIGMA", "world_name"]
 	},
 	'identifier': {
-		'room': '[0]["GENERAL"]["designer"]',
-		'world': '[0]["name_full"]',
+		'room': [0, "GENERAL", "designer"],
+		'world': [0, "name_full"],
 		'save': None
 	}
 }
-
 #!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~▯
 def fontcharwidth(fontwidths:list[str]) ->dict[str,int]:
 	chars = string.ascii_uppercase + string.digits + string.punctuation + ' '
@@ -75,35 +74,36 @@ def batchrenamer(
 		)
 		header(mInfo.title, True)
 		print(*message, sep='\n')
-		print('\n'+' CURRENT SCRIPT NOT FUNCTIONAL, PREVIEW ONLY '.center(80,'='))
-		return pe2c()
+		# print('\n'+' CURRENT SCRIPT NOT FUNCTIONAL, PREVIEW ONLY '.center(80,'='))
+		# return pe2c()
 
-		# match (choice := menudialog(
-		# 		mInfo,
-		# 		sSumm,
-		# 		True,
-		# 		message,
-		# 		30
-		# 	)):
+		match (choice := menudialog(
+				mInfo,
+				sSumm,
+				True,
+				message,
+				30
+			)):
 			
-		# 	case 'res':
-		# 		datas = selection.getdatas()
-		# 		progress(goal.capitalize()+" names reverted", True)
-		# 		break
+			case 'res':
+				datas = selection.getdatas()
+				progress(goal.capitalize()+" names reverted", True)
+				break
 
-		# 	case 'ok':
-		# 		progress(f"Saving {goal.capitalize()} names")
-		# 		selection.setdatas(datas)
-		# 		progress(goal.capitalize()+" names saved!", True)
-		# 		break
+			case 'ok':
+				progress(f"Saving {goal.capitalize()} names")
+				selection.setdatas(datas, True)
+				progress(goal.capitalize()+" names saved!", True)
+				break
 
-		# 	case 0:
-		# 		datas = {
-		# 			k: newname(d, (fTypes[k], goal))
-		# 			for k, d in datas.items()
-		# 		}
-		# 	case 1|2|3:
-		# 		datas = editname(datas, goal, fTypes, choice)
+			case 0:
+				datas = {
+					# k: newname(d, (fTypes[k], goal))
+					k: newname(d, goal, fTypes[k])
+					for k, d in datas.items()
+				}
+			case 1|2|3:
+				datas = editname(datas, goal, fTypes, choice)
 
 
 def shownames(
@@ -118,7 +118,7 @@ def shownames(
 			continue
 		
 		shortFNames.append(mpselectedpreview(selection, k))
-		names.append(eval('data'+dp))
+		names.append(getnestedvalue(data, dp))
 	
 	cwidth = visiblen(max(shortFNames + names, key=visiblen)) #-----------------measure longest name
 	cnumber = terminalsize(0) // cwidth #---------------------------------------floor division to count # of columns
@@ -146,23 +146,24 @@ def shownames(
 	return preview
 
 
-def newname(data:list[dict], goal:tuple[str,str]) ->list[dict]:
-	# name = eval('data'+ DATAPATHS[goal[1]][goal[0]])
-	name = input()
+def newname(data:list[dict], goal:str, filetype:str) ->list[dict]:
+	name = textdialog(
+		f'Enter new {goal}',
+		[],
+		getnestedvalue(data, DATAPATHS[goal][filetype]),
+		25,
+		1,
+		FONTMAGO_CHARWIDTHS
+	)
 
-	match goal[0]:
-		case 'room':
-			data[0]["GENERAL"]["name"] = name
-		case 'world':
-			data[0]["name"]
-
-	# data[0]
+	setnestedvalue(data, DATAPATHS[goal][filetype], name)
 	
 	return data
 
 
 def editname(
 		datas:dict[int,list[dict]],
-		goal:tuple[str,str]
+		goal:str,
+		filetypes:list[str]
 	) ->dict[int,list[dict]]:
 	pass

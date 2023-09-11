@@ -58,9 +58,8 @@ def optiontip(
 		tip:str,
 		margin:int = 3,
 		defau:bool = False,
-		dis:bool = False,
-		printable:bool = False
-	) -> str|None:
+		dis:bool = False
+	) -> str:
 	"""Print an option with a description
 
 	:param id: option identifier
@@ -75,8 +74,6 @@ def optiontip(
 	col = ('9','3')[dis] + ('4','6')[defau]
 	tip = f' : \033[{col}m{tip}\033[0m'
 	
-	if printable:
-		print(esc + opt + tip)
 	return esc + opt + tip
 
 
@@ -293,6 +290,45 @@ def numberdialog(
 		woops("I'll need you to type a valid number")
 		steptodo(question)
 	
+	return answer
+
+
+def textdialog(
+	question:str = '',
+	tips:list = [],
+	defau:str|None = None,
+	maxlen:int|None = None,
+	minlen:int|None = None,
+	units:dict[str,int]|None = None,
+):
+	"""Get a string within limits if given, measured by units (all chars default
+	to 1)
+	
+	Usage::
+
+	    textdialog(
+	        "What's your name?',
+	        [
+	            'answer honestly',
+	            'last, first'
+	        ],
+	        'Doe, John',
+	        25,
+	        3,
+	        {
+	            '-':0
+	            'i':1
+	            'w':3
+	        }
+	    )
+	"""
+	def readtext():
+		pass
+	
+	while (answer := readtext()) is None:
+		woops(f"I'll need you to type something")
+		steptodo(question)
+
 	return answer
 
 

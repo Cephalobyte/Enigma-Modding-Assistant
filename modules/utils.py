@@ -152,23 +152,48 @@ def rowsfromlist(
 	return rows
 
 
-def getnestedvalue(dct:dict, keypath:list, defau=None):
+def getnestedvalue(dct:dict|list, keys:list, defau=None):
 	"""Get the value from a nested dictionary from a path consisted of a list of
 	keys
 
 	:param dct: The dictionary
-	:param keypath: The keys to search within the nested dictionary
-	:param defau: default value to return if one key is invalid
+	:param keys: The keys to search within the nested dictionary
+	:param defau: default value to return if one key doesn't exist
 	"""
-	nesteddict = dct
 
-	for k in keypath:
-		try:	
-			nesteddict = nesteddict[k]
-		except KeyError:
+	for k in keys:
+		try:
+			dct = dct[k]
+		except KeyError|ValueError|IndexError: #--------------------------------if key not found or index invalid or out of range, return default value
 			return defau
 	
-	return nesteddict
+	return dct
+
+
+def setnestedvalue(dct:dict|list, keys:list, value, default=None):
+	"""Set the value of a nested key in a dictionary from a path consisted of a
+	list of keys if path is valid
+	
+	:param dct: The dictionary/list
+	:param keys: The keys to search within the nested dictionary
+	:param value: the value to set at the last key
+	:param defau: value to assign to keys out of range of a list
+	"""
+	#Inspired from https://stackoverflow.com/a/13688108
+	for k in keys[:-1]:
+		try:
+			dct = dct[k]
+		except KeyError:
+			dct.setdefault(k, {})
+		except IndexError:
+			if type(k) is int:
+				while k >= len(dct): #------------------------------------------as long as the key is out of range, fill with default values
+					dct.append(default)
+				dct = dct[k]
+			else:
+				return
+
+	dct[keys[-1]] = value
 
 
 #============ Sorting ==================================================================================================

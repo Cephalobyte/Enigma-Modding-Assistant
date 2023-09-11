@@ -245,7 +245,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 
 	0: { #====================================================================== RENAME TITLE SUBMENU
 		'info': MenuInfo(
-			'Rename title name',
+			'Rename title',
 			'By which method?',
 			[
 				'rewrite',		#0	(singular)
@@ -262,7 +262,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 	},
 	1: { #====================================================================== RENAME IDENTIFIER SUBMENU
 		'info': MenuInfo(
-			'Rename identifier name',
+			'Rename identifier',
 			'By which method?',
 			[
 				'rewrite',		#0	(singular)
