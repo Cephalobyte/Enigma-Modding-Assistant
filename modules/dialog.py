@@ -298,8 +298,8 @@ def textdialog(
 	tips:list = [],
 	defau:str|None = None,
 	maxlen:int|None = None,
-	minlen:int|None = None,
-	units:dict[str,int]|None = None,
+	# minlen:int|None = None,
+	units:dict[str,int] = {},
 ):
 	"""Get a string within limits if given, measured by units (all chars default
 	to 1)
@@ -314,16 +314,41 @@ def textdialog(
 	        ],
 	        'Doe, John',
 	        25,
-	        3,
 	        {
-	            '-':0
+	            'i':1
 	            'i':1
 	            'w':3
 	        }
 	    )
 	"""
+	if defau is not None:
+		tips = tips.copy() + ['Leave empty to keep current string'] #-----------copy "tips" to prevent reference and constantly adding the same tip if asked again
+	if maxlen is not None:
+		tips += [f"string length should be under {maxlen}"]
+	
 	def readtext():
-		pass
+		if defau is not None:
+			print(f'\033[s\033[90m{defau}\033[u\033[39m', end='')
+		
+		if not (text := input()): #---------------------------------------------if question is skipped, return default answer
+			return defau
+		
+		if maxlen is not None:
+			if units is not None:
+				tLen = 0
+				for i, c in enumerate(text):
+					if (tLen := tLen + units.get(c, 1)) > maxlen:
+						text = text[i]
+						break
+
+			else:
+				text = text[:maxlen]
+		
+		return text
+
+	steptodo(question, True)
+	for tip in tips:
+		protip(tip)
 	
 	while (answer := readtext()) is None:
 		woops(f"I'll need you to type something")

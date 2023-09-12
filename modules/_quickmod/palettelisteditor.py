@@ -380,10 +380,10 @@ def manualpaletteorder(datas:dict[int,list[dict]], page:int):
 		return datas
 	
 	requests.sort()
-	# progress('Requests :', *requests, sep='\n')
+	print('Requests :', *requests, sep='\n')
 	
 	changes = getchanges(fillunsetorders(*getorders(requests)))
-	# print(*changes.items(), sep='\t')
+	print(*changes.items(), sep='\t')
 
 	if len(datas) > 1:
 		orders, softs = getorders(
