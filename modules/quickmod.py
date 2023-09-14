@@ -41,13 +41,6 @@ def quickmod(
 		sDis = selection.discriminators.copy()
 		breadcrumbs = []
 		message = trail(), mpselectionpreview(selection)
-		
-		print(
-			'sDis :', *selection.discriminators,
-			'mDis :', *mInfo.discriminators.items(),
-			sep='\n'
-		)
-		print('sSum :', *sSumm)
 
 		match (choice := menudialog(mInfo, sSumm, True, message)):
 

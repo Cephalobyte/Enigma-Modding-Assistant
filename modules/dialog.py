@@ -298,7 +298,6 @@ def textdialog(
 	tips:list = [],
 	defau:str|None = None,
 	maxlen:int|None = None,
-	# minlen:int|None = None,
 	units:dict[str,int] = {},
 ):
 	"""Get a string within limits if given, measured by units (all chars default
@@ -316,15 +315,16 @@ def textdialog(
 	        25,
 	        {
 	            'i':1
-	            'i':1
+	            'a':2
 	            'w':3
 	        }
 	    )
 	"""
+	uName = ' chars' if not units else 'px'
 	if defau is not None:
 		tips = tips.copy() + ['Leave empty to keep current string'] #-----------copy "tips" to prevent reference and constantly adding the same tip if asked again
 	if maxlen is not None:
-		tips += [f"string length should be under {maxlen}"]
+		tips += [f"String length should be under {maxlen}{uName}"]
 	
 	def readtext():
 		if defau is not None:
@@ -337,8 +337,11 @@ def textdialog(
 			if units is not None:
 				tLen = 0
 				for i, c in enumerate(text):
+					print(i, c, tLen, maxlen, sep='\t')
 					if (tLen := tLen + units.get(c, 1)) > maxlen:
-						text = text[i]
+						text = text[:i]
+						progress(f'String length over maximum ({tLen}{uName})')
+						progress('Truncated to '+text, True)
 						break
 
 			else:

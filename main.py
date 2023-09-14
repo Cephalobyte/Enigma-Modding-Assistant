@@ -29,12 +29,12 @@ def main():
 		breadcrumbs = []
 		message = trail(), mpselectionpreview(selection)
 
-		print(
-			'sDis :', *selection.discriminators,
-			'mDis :', *mInfo.discriminators.items(),
-			sep='\n'
-		)
-		print('sSum :', *sSumm)
+		# print(
+		# 	'sDis :', *selection.discriminators,
+		# 	'mDis :', *mInfo.discriminators.items(),
+		# 	sep='\n'
+		# )
+		# print('sSum :', *sSumm)
 
 		match (choice := menudialog(mInfo, sSumm, True, message)):
 

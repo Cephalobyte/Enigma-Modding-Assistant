@@ -13,8 +13,8 @@ def terminalsize(axis:int|None=None)->tuple[int,int]|int:
 			return ts.columns
 		case 1:
 			return ts.lines
-		case _:
-			return tuple(ts)
+	
+	return tuple(ts)
 
 
 def invisiblen(txt:str):
@@ -32,6 +32,17 @@ def visiblen(txt:str):
 	sum of their lenght for screen-accurate justification, truncating, etc.
 	"""
 	return len(txt)-invisiblen(txt)
+
+
+def truncatestringwidth(txt:str, maxlen:int, units:dict[str,int]):
+	"""Truncate text based on font width"""
+	tLen = 0
+
+	for i, c in enumerate(txt):
+		if (tLen := tLen + units.get(c, 1)) > maxlen:
+			txt = txt[:i]
+			return True
+	return False
 
 
 def micromapindexorder(width:int, height:int) ->list[int]:

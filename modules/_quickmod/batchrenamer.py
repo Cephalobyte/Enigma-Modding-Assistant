@@ -72,10 +72,6 @@ def batchrenamer(
 			breadcrumbtrail(basecrumbs),
 			shownames(selection, datas, goal),
 		)
-		header(mInfo.title, True)
-		print(*message, sep='\n')
-		# print('\n'+' CURRENT SCRIPT NOT FUNCTIONAL, PREVIEW ONLY '.center(80,'='))
-		# return pe2c()
 
 		match (choice := menudialog(
 				mInfo,
@@ -98,7 +94,6 @@ def batchrenamer(
 
 			case 0:
 				datas = {
-					# k: newname(d, (fTypes[k], goal))
 					k: newname(d, goal, fTypes[k])
 					for k, d in datas.items()
 				}
@@ -147,16 +142,18 @@ def shownames(
 
 
 def newname(data:list[dict], goal:str, filetype:str) ->list[dict]:
+	maxlen = 500 if goal == 'title' else 360
+	keypath = DATAPATHS[goal][filetype]
+
 	name = textdialog(
 		f'Enter new {goal}',
 		[],
-		getnestedvalue(data, DATAPATHS[goal][filetype]),
-		25,
-		1,
+		getnestedvalue(data, keypath),
+		maxlen,
 		FONTMAGO_CHARWIDTHS
 	)
 
-	setnestedvalue(data, DATAPATHS[goal][filetype], name)
+	setnestedvalue(data, keypath, name)
 	
 	return data
 
@@ -164,6 +161,29 @@ def newname(data:list[dict], goal:str, filetype:str) ->list[dict]:
 def editname(
 		datas:dict[int,list[dict]],
 		goal:str,
-		filetypes:list[str]
+		filetypes:list[str],
+		mode:int
 	) ->dict[int,list[dict]]:
-	pass
+
+	mName = (f'new ','prefix','suffix','replacement')[mode]
+	keypaths = DATAPATHS[goal]
+
+	if mode == 3:
+		old = textdialog('Search for')
+	new = textdialog('Enter '+mName)
+
+	for k, data in datas.items():
+		name:str = getnestedvalue(data, (keypath := keypaths[filetypes[k]]))
+
+		match mode:
+			case 1:
+				name = new + name
+			case 2:
+				name += new
+			case 3:
+				name = name.replace(old, new)
+		print(name)
+
+		setnestedvalue(datas[k], keypath, name)
+	
+	return datas
