@@ -132,7 +132,7 @@ def encrypt(
 				case 'world':
 					fName = data[0]['name_full']
 		else:
-			fName = getshortname(fPath)
+			fName = getshortname(fPath, fType)
 			
 		progress(f'Exporting {fType}')
 

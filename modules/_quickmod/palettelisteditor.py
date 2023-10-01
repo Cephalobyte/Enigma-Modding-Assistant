@@ -166,7 +166,7 @@ def showpalettes(datas:dict[int, list[dict]], page:int=0) ->str:
 	# screens:list[dict[str]] = data[0].get("SCREENS", None)
 
 	def shadecolor(cId:int, big:bool=True) ->str:
-		esc = painttext(*ENIGMACOLORS_RGB[cId])
+		esc = painttext(*ENIGMACOLORS_RGB[int(cId)])
 		char = ENIGMACOLORS_CHARS.get(cId, '█') * (big+1)
 		return esc+char
 
@@ -344,7 +344,7 @@ def stripstaticframes(data:list[dict]) ->list[dict]:
 
 
 def stripframes(palette:dict[str,int|list[int]]) -> dict[str,int|list[int]]:
-	palette["s"] = 0 #----------------------------------------------------------set speed to 0
+	palette["s"] *= 0 #---------------------------------------------------------set speed to 0
 	palette["f"] = palette["f"][:1] #-------------------------------------------limit frames to first
 	return palette
 
