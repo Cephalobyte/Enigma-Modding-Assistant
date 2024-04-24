@@ -28,6 +28,7 @@ class MPFileType(NamedTuple):
 	- `save`
 	- `data`
 	- `palette`
+	- `stamp`
 
 	is_compressed:
 	- `True` if extension starts with `.mp_` and ends with file type
@@ -167,8 +168,9 @@ FILETYPES_VALIDCOLORS = {
 	'room':		'6', #cyan
 	'world':	'4', #blue
 	'save':		'2', #green
-	'data':		'3', #yellow
+	'stamp':	'3', #yellow
 	'palette':	'5', #purple
+	'data':		'7', #white
 }
 
 ROOTDIR = osp.dirname(osp.abspath(__file__)).removesuffix('\\modules')
@@ -354,7 +356,7 @@ def mpselectionpreview(selection:SelectionInfo) ->str:
 
 	while i < len(selection.file_paths):
 		fType = selection.file_types[i] #---------------------------------------get file type from path's index
-		esc = '\33[' + ('4;3','9')[fType.is_compressed] #----------------------prepare escape sequence (bright if compressed)
+		esc = '\33[' + ('4;3','9')[fType.is_compressed] #-----------------------prepare escape sequence (bright if compressed)
 		if fType.is_compressed in discC:
 			esc += '1m'
 		else:

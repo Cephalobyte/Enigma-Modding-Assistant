@@ -128,12 +128,14 @@ def decrypt(
 		fPath:str = selection.file_paths[k]
 		fType:str = selection.file_types[k].type
 
-		if renamebytitle and fType in ['room','world']:
+		if renamebytitle and fType in ['room','world','stamp']:
 			match fType:
 				case 'room':
 					fName = data[0]['GENERAL']['name']
 				case 'world':
 					fName = data[0]['name_full']
+				case 'stamp':
+					fName = data[0]['META']['name']
 		else:
 			fName = getshortname(fPath)
 

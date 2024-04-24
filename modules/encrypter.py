@@ -131,6 +131,8 @@ def encrypt(
 					fName = data[0]['GENERAL']['name']
 				case 'world':
 					fName = data[0]['name_full']
+				case 'stamp':
+					fName = data[0]['META']['name']
 		else:
 			fName = getshortname(fPath, fType)
 			

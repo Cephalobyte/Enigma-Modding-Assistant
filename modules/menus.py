@@ -45,8 +45,8 @@ class MenuInfo(NamedTuple):
 	        },
 	        3,                       #default
 	        {
-	            0: ['data'],     # disable if selection only has data
-	            1: [2],          # ^^ has multiple files
+	            0: ['data'],	 # disable if selection only has data
+	            1: [2],			 # ^^ has multiple files
 	            2: [1],          # ^^ has only one file
 	                             # always enabled
 	            4: [3],          # always disabled
@@ -161,8 +161,8 @@ MAIN_MENUS = { #================================================================
 		{
 			0: [False],
 			1: [True],
-			2: ['data'],
-			3: ['save','data','palette'],
+			2: ['data','stamp'],
+			3: ['save','data','palette','stamp'],
 			'prefs': [3],
 		}
 	)
