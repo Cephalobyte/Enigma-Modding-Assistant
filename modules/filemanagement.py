@@ -1,6 +1,7 @@
 from typing import NamedTuple
 import os
 from os import path as osp
+from pathlib import Path
 import json, zlib
 import re
 from glob import glob
@@ -173,7 +174,8 @@ FILETYPES_VALIDCOLORS = {
 	'data':		'7', #white
 }
 
-ROOTDIR = osp.dirname(osp.abspath(__file__)).removesuffix('\\modules')
+# ROOTDIR = osp.dirname(osp.abspath(__file__)).removesuffix('\\modules')
+ROOTDIR = Path(__file__).parent.parent
 
 #============ GENERIC ==================================================================================================
 
@@ -215,6 +217,10 @@ def opentxt(path:str) ->str:
 	with open(path) as file:
 		return file.read()
 
+def openasciiart(graphicname:str) ->list[str]:
+	graphicpath = ROOTDIR/'modules'/'_graphics'/f'{graphicname}.txt'
+	with open(graphicpath, encoding="utf-8") as file:
+		return file.read().splitlines()
 
 def openjson(path:str) ->dict:
 	with open(path) as file:
@@ -265,7 +271,7 @@ def mpfileselection(
 			'Enter the filepaths to use',
 			[
 				'Drag & drop your files here one by one',
-				'Use .\ for paths relative to '+ROOTDIR,
+				'Use .\ for paths relative to '+ str(ROOTDIR),
 				'Use *, **, ?, [a-z], etc. as glob pattern wildcards'
 			],
 			file=True
@@ -280,7 +286,7 @@ def mpfileselection(
 		print('current path is :',fp)
 
 		if any(fp.count(char) for char in '*?['): #-----------------------------if glob wildcards are present in the path,
-			if (newpaths := glob(fp, root_dir=ROOTDIR, recursive=True)): #------if a glob search returns results,
+			if (newpaths := glob(fp, root_dir=str(ROOTDIR), recursive=True)): #------if a glob search returns results,
 				ifp = fPaths.index(fp)
 				fPaths = fPaths[:ifp] + newpaths + fPaths[ifp:] #---------------insert new paths in selection
 				fPaths.remove(fp) #---------------------------------------------remove glob pattern from path list

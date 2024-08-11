@@ -10,12 +10,20 @@ from modules.menus import MenuInfo
 from modules.filemanagement import (
 	SelectionSummary,
 	MPFileType,
-	FILETYPES_VALIDCOLORS
+	FILETYPES_VALIDCOLORS,
+
+	openasciiart
 )
 from modules.utils import (
 	rowsfromlist,
 	terminalsize,
 	# visiblen
+)
+from modules.graphics import (
+	GWG,
+	flushprint,
+	fadegraphic,
+	fadegraphics
 )
 
 
@@ -93,7 +101,7 @@ def woops(warn:str, stop:bool=False):
 	if stop:
 		pe2c()
 	else:
-		sleep(1)
+		sleep(.5)
 
 
 def ohno(err:str, stop:bool=True, out:bool=True):
@@ -121,17 +129,37 @@ def ohno(err:str, stop:bool=True, out:bool=True):
 def painttext(r:int, g:int=0, b:int=0, bg:bool=False) ->str:
 	"""Return a colored escape sequence from r, g and b values (give at least red value)
 	
-	:param bg: true to affect the background"""
+	:param bg: true to affect the background
+	"""
 	esc = ('38','48')[bg]
 	return f'\033[{esc};2;{r};{g};{b}m'
 
 
 def welcome():
-	tw, th = terminalsize()
+	logo = openasciiart("logo")
+	title = openasciiart("title")
+	blues = [30,34,94,36]
+	greys = [30,90,37,97]
+	tw, th = terminalsize() #---------------------------------------------------terminal width & height
 
-	def flushprint(*msg):
-		print(*msg, sep='', end='', flush=True)
-	pass
+	th = max(len(logo), len(title), th)
+	tw = max(*(len(s) for s in title), tw)
+	flushprint(f'\33[8;{th};{tw}t') #-------------------------------------------resize window
+	
+	flushprint('\33[2J\33[0;0H\33[s') #-----------------------------------------erase display and save cursor position at top of screen
+	fadegraphic(logo, blues) #--------------------------------------------------
+	sleep(.25)
+	
+	fadegraphic(title, greys, transpace=True)
+	sleep(1)
+
+	fadegraphics(
+		GWG(logo, list(reversed(blues[1:]))),
+		GWG(title, list(reversed(greys[1:]))),
+		transpace=True
+	)
+
+	flushprint('\33[2J\33[u') #-------------------------------------------------erase display and reset cursor position
 
 
 def seeyounextmission():
@@ -148,10 +176,7 @@ def seeyounextmission():
 	clearcolsR = ('\33[0K│\33[1A\33[1D'*th)
 	clearrowsT = '\33[1J'
 	clearrowsB = '\33[J'
-	vbar = f'\33[2J\33[;{htw}H'+('│\33[1B\33[1D')*th
-
-	def flushprint(*msg):
-		print(*msg, sep='', end='', flush=True)
+	vbar = f'\33[2J\33[;{htw}H'+('│\33[1B\33[1D')*th #--------------------------vertical bar
 
 	for x in range(1, htw, speed):
 		start = f'\33[;{x}H'

@@ -1,11 +1,13 @@
 from os import system
+from pathlib import Path
 
 from modules.menus import MAIN_MENUS
 from modules.dialog import (
+	welcome,
+	seeyounextmission,
 	breadcrumbtrail,
 	menudialog,
-	header,
-	seeyounextmission
+	header
 )
 from modules.filemanagement import (
 	SelectionInfo,
@@ -90,6 +92,7 @@ def main():
 
 if __name__ == '__main__':
 	system('cls') #-------------------------------------------------------------allows ANSI escape sequences
+	welcome()
 
 	main()	#-------------------------------------------------------------------run program
 
