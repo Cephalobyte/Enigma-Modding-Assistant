@@ -40,7 +40,7 @@ def decrypter(
 			return
 	
 	sSumm = selection.getsummary()
-	outputdir = ROOTDIR+'\\converted'
+	outputdir = ROOTDIR/'converted'
 	renamebytitle = True
 	overwrite = False
 	

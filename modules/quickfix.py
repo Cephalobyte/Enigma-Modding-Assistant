@@ -47,7 +47,7 @@ def quickfix(
 		return msg
 	
 	autozip = False
-	autozipdir = ROOTDIR+'\\converted'
+	autozipdir = ROOTDIR/'converted'
 	
 	while True: #=============================================================== QUICK FIX =============================
 		mInfo = QUICKFIX_MENUS['info']

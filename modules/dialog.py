@@ -31,16 +31,37 @@ from modules.graphics import (
 
 def header(title:str, big:bool=False, size:int=80):
 	"""Print a header for clear navigation"""
+	headr = []
+	speed = size//10
 	size -=2
+	frame = 1/60
 
-	if big :
-		print('\n\033[32m█'+ ('▀'*size) +'█')
-		print(f'█\033[39m{title.center(size)}\033[32m█')
-		print('█'+ ('▄'*size) +'█\033[39m')
-	else :
-		print('\n \033[32m'+ ('▄'*size))
-		print(f' █\033[39m{title.center(size-2)}\033[32m█')
-		print(' '+ ('▀'*size) +'\033[39m')
+	if big:
+		headr.append('█'+ ('▀'*size) +'█')
+		headr.append(f'█{title.center(size)}█')
+		headr.append('█'+ ('▄'*size) +'█')
+	else:
+		headr.append(' '+ ('▄'*size) +' ')
+		headr.append(f' █{title.center(size-2)}█ ')
+		headr.append(' '+ ('▀'*size) +' ')
+
+	flushprint('\n\n\n\33[32m')#------------------------------------------------add newline, save cursor position and add 2 new lines (to push the bottom screen further down)
+	
+	size = (size+2) // speed
+	bar = '▒'*(speed-1)+'█'
+
+	for i in range(size):
+		j = i*speed
+		k = j + speed
+		if i == size-1:
+			bar = ''
+
+		flushprint(f'\33[2A\33[{j+1}G', headr[0][j:k], bar)
+		flushprint(f'\33[B\33[{j+1}G', headr[1][j:k], bar)
+		flushprint(f'\33[B\33[{j+1}G', headr[2][j:k], bar)
+		sleep(frame)
+		
+	flushprint('\n\033[39m')
 
 
 def breadcrumbtrail(breadcrumbs:list[str]) ->str:
