@@ -153,8 +153,9 @@ MAIN_MENUS = { #================================================================
 			# '"quick fix" to correct common problems when modding'	#3
 		],
 		{
-			# 'prefs':'Manage your preferences',
 			'sel':'select multiple files to edit at once',
+			# 'pf':'Manage your preferences',
+			# 'mod':'Manage external python modules',
 			'quit':'Done for now?'
 		},
 		None,

@@ -21,6 +21,7 @@ from modules.utils import (
 )
 from modules.graphics import (
 	GWG,
+
 	flushprint,
 	fadegraphic,
 	fadegraphics
@@ -33,10 +34,10 @@ def header(title:str, big:bool=False, size:int=80):
 	"""Print a header for clear navigation"""
 	headr = []
 	speed = size//10
-	size -=2
+	size -=2 #------------------------------------------------------------------to simplify the procedural ascii header
 	frame = 1/60
 
-	if big:
+	if big: #-------------------------------------------------------------------if big, give vertical padding to the borders
 		headr.append('█'+ ('▀'*size) +'█')
 		headr.append(f'█{title.center(size)}█')
 		headr.append('█'+ ('▄'*size) +'█')
@@ -45,23 +46,23 @@ def header(title:str, big:bool=False, size:int=80):
 		headr.append(f' █{title.center(size-2)}█ ')
 		headr.append(' '+ ('▀'*size) +' ')
 
-	flushprint('\n\n\n\33[32m')#------------------------------------------------add newline, save cursor position and add 2 new lines (to push the bottom screen further down)
+	size = (size+2) // speed #--------------------------------------------------get back to the original size and divide it by the speed
+	bar = '▒'*(speed-1)+'█' #---------------------------------------------------build a "whoosh" effect to print as the header appears
 	
-	size = (size+2) // speed
-	bar = '▒'*(speed-1)+'█'
+	flushprint('\n\n\n\33[32m')#------------------------------------------------feed newlines to scroll up (if at bottom of screen)and activate the green coloration
 
 	for i in range(size):
 		j = i*speed
 		k = j + speed
-		if i == size-1:
+		if i == size-1: #-------------------------------------------------------if it's the last step, don't put a whoosh
 			bar = ''
 
-		flushprint(f'\33[2A\33[{j+1}G', headr[0][j:k], bar)
-		flushprint(f'\33[B\33[{j+1}G', headr[1][j:k], bar)
-		flushprint(f'\33[B\33[{j+1}G', headr[2][j:k], bar)
+		flushprint(f'\33[2A\33[{j+1}G', headr[0][j:k], bar) #-------------------go up 2 lines, set the horizontal position and print the segment of characters in the 1st row of the header plus the whoosh bar
+		flushprint(f'\33[B\33[{j+1}G', headr[1][j:k], bar) #--------------------go down 1 line, set the horizontal position and print the segment of characters in the 2nd row of the header plus the whoosh bar
+		flushprint(f'\33[B\33[{j+1}G', headr[2][j:k], bar) #--------------------go down 1 line, set the horizontal position and print the segment of characters in the 3rd row of the header plus the whoosh bar
 		sleep(frame)
 		
-	flushprint('\n\033[39m')
+	flushprint('\n\033[39m') #--------------------------------------------------feed a newline and set the text color to the original
 
 
 def breadcrumbtrail(breadcrumbs:list[str]) ->str:
@@ -76,7 +77,7 @@ def steptodo(step:str, newline:bool=False):
 def protip(tip:str, defau=False):
 	"""Print useful info
 
-	:param defau: highlight the tip that describes the default value
+	:param defau: highlight this tip for describing a default value for example
 	"""
 	col = ('94','96')[defau]
 	print(f'\033[{col}m(i) '+ tip +'\033[0m')
