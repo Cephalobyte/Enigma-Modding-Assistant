@@ -15,6 +15,60 @@ from modules.filemanagement import (
 from modules.utils import rowsfromlist
 
 
+#============ CONSTANTS ================================================================================================
+
+ITEMSLIST = [ #	0: template; 1: placeholder/deconfirmed; 2: implemented; 3: legal
+	('???',				0),	#0
+	('Long beam',		3),	#1
+	('Charge beam',		1),	#2
+	('Ice beam',		3),	#3
+	('Wave beam',		3),	#4
+	('Spazer beam',		3),	#5
+	('Plasma beam',		1),	#6
+	('Energy Tank',		3),	#7
+	('Varia Suit',		3),	#8
+	('Gravity Suit',	2),	#9
+	('Morph Ball',		3),	#10
+	('Spring Ball',		3),	#11
+	('Bosst Ball (sic)',1),	#12
+	('Spider Ball',		1),	#13
+	('Bombs',			3),	#14
+	('Power Bombs',		1),	#15
+	('Missiles',		3),	#16
+	('Super Missiles',	2),	#17
+	('High Jump Boots',	3),	#18
+	('Space Jump',		3),	#19
+	('Speed Booster',	2),	#20
+	('Screw Attack',	3),	#21
+	('Sensor Visor',	2),	#22
+	('Thermal Visor',	1),	#23
+	('X-Ray Visor',		1),	#24
+	('Refill (strike)',	2),	#25
+	('Power Grip',		1),	#26
+	('Grapple Beam',	1),	#27
+	('???',				0),	#28
+	('???',				0),	#29
+	('Surge Core',		3),	#30
+	('Aegis Core',		3),	#31
+	('Crystal Core',	3),	#32
+	('Magnet Core',		3),	#33
+	('Phazon Core',		3),	#34
+	('Chrono Core',		3),	#35
+	('Phantom Core',	3),	#36
+	('Sensor Core',		3),	#37
+	('Core Capacitor',	3),	#38
+	('Core Dynamo',		3),	#39
+	('',				0),	#40
+	('',				0),	#41
+	('',				0),	#42
+	('',				0),	#43
+	('',				0),	#44
+	('',				0),	#45
+	('',				0),	#46
+	('',				0),	#47
+	('',				0),	#48
+	('',				0),	#49
+]
 AMMOLABELS = {
 	7:	'e-tanks',
 	15:	'power bombs',
@@ -35,6 +89,8 @@ AMMOPICKUPS_HARD = {
 }
 
 
+#============ FUNCTIONS ================================================================================================
+
 def inventory(
 		mInfo: MenuInfo,
 		selection: SelectionInfo,
@@ -43,6 +99,11 @@ def inventory(
 
 	mInfo.addnavigationoptions()
 	mInfo.addbatchmanipoptions()
+	primaryoptions = [ #--------------------------------------------------------highlight illegal items
+		(f'\33[7m{n}\33[27m', n)[l > 2]
+		for n, l in ITEMSLIST
+	]
+	mInfo.primary_options.extend(primaryoptions) #------------------------------add item list to primary options
 
 	datas = selection.getdatas()
 	sSumm = selection.getsummary()
@@ -150,10 +211,15 @@ def showinventory(datas:dict[int, list[dict]], page:int=0):#, fPaths:list[str]):
 
 
 def editinventory(datas:dict[int,list[dict]], rId:int):
-	allids = range(max([
-				len(d[0]["SAMUS"]["inventory"])
-				for d in datas.values()
-			]))
+	# allids = range(max([
+	# 			len(d[0]["SAMUS"]["inventory"])
+	# 			for d in datas.values()
+	# 		]))
+	allids = [ #----------------------------------------------------------------All Ids are only the legal item ids 
+		id
+		for id, il in enumerate(ITEMSLIST)
+		if il[1] > 2
+	]
 
 	if rId == 'all':
 		amount = min(sum( #-----------------------------------------------------minimum value of every upgrade (flattened) of every data
@@ -214,7 +280,7 @@ def editinventory(datas:dict[int,list[dict]], rId:int):
 				continue
 
 			datas[k][0]["SAMUS"]["ammo_capacity"][aId] = ammo
-					
+	
 
 	match rId:
 		case 'all':

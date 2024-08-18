@@ -29,11 +29,11 @@ def flushprint(*msg): #---------------------------------------------------------
 
 def drawgraphic(graphic, centered:bool=True, transpace:bool=False):
 	"""Print a ascii art graphic
-	graphic:
+	:param graphic:
 		list of strings
-	centered:
+	:param centered:
 		will write the graphic at the terminal center
-	transpace:
+	:param transpace:
 		will skip space characters to not overwrite characters below
 	"""
 
@@ -57,7 +57,7 @@ def fadegraphic(
 		centered:bool=True, transpace:bool=False
 	):
 	"""fade one graphic with a list of colors
-		save the cursor position beforehand with escape code \33[s for correct replacement
+		save the cursor position beforehand with escape code \\33[s for correct replacement
 	"""
 	
 	for color in colors:

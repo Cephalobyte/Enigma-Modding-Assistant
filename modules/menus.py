@@ -35,7 +35,7 @@ class MenuInfo(NamedTuple):
 	            'option 1 description'   #for single selection only
 	            'option 2 description'   #for multiple selection only
 	            'option 3 description'   #chosen if user skips
-	            'option 4 description'   #for planning ahead
+	            'option 4 description'   #for planned features
 	        ],
 	        {
 	            'a': 'description'   #for multiple or non-data sel.
@@ -155,7 +155,7 @@ MAIN_MENUS = { #================================================================
 		{
 			'sel':'select multiple files to edit at once',
 			# 'pf':'Manage your preferences',
-			# 'mod':'Manage external python modules',
+			'mem':'Manage external python modules',
 			'quit':'Done for now?'
 		},
 		None,
@@ -164,7 +164,7 @@ MAIN_MENUS = { #================================================================
 			1: [True],
 			2: ['data','stamp'],
 			3: ['save','data','palette','stamp'],
-			'prefs': [3],
+			'pf': [3],
 		}
 	)
 }
@@ -296,7 +296,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 			}
 		)
 	},
-	'ed': { #================================================================ EDIT MODIFICATION DATE SUBMENU
+	'ed': { #=================================================================== EDIT MODIFICATION DATE SUBMENU
 		'info': MenuInfo(
 			'Edit modification date',
 			'By which method?',
@@ -333,7 +333,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 			}
 		)
 	},
-	'tl': { #================================================================ EDIT TAG LIST SUBMENU
+	'tl': { #=================================================================== EDIT TAG LIST SUBMENU
 		'info': MenuInfo(
 			'Tag list editor',
 			'What do you want to edit?',
@@ -347,7 +347,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 			0,
 		)
 	},
-	'al': { #================================================================ EDIT AREA LIST SUBMENU
+	'al': { #=================================================================== EDIT AREA LIST SUBMENU
 		'info': MenuInfo(
 			'Area list editor',
 			'What do you want to edit?',
@@ -400,9 +400,9 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 				1,
 			)
 		},
-		2: { #================================================================== EDIT AREA BGMS SUBSUBMENU
+		2: { #================================================================== EDIT AREA MUSIC SUBSUBMENU
 			'info': MenuInfo(
-				'Edit area BGMs',
+				'Edit area Music',
 				'By which method?',
 				[
 					'replace by name'	#0
@@ -414,7 +414,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 			)
 		}
 	},
-	'map': { #================================================================= REVEAL MAP DATA SUBMENU
+	'map': { #================================================================== REVEAL MAP DATA SUBMENU
 		'info': MenuInfo(
 			'Reveal map data',
 			'Which region?',
@@ -439,58 +439,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 		'info': MenuInfo(
 			'Edit starting inventory',
 			'Which upgrade?',
-			[
-				'\033[7m???\033[27m',					#0
-				'Long beam',							#1
-				'\033[7mCharge beam\033[27m',			#2
-				'Ice beam',								#3
-				'Wave beam',							#4
-				'Spazer beam',							#5
-				'\033[7mPlasma beam\033[27m',			#6
-				'Energy Tank',							#7
-				'Varia Suit',							#8
-				'\033[7mGravity Suit\033[27m',			#9
-				'Morph Ball',							#10
-				'Spring Ball',							#11
-				'\033[7mBosst Ball (sic)\033[27m',		#12
-				'\033[7mSpider Ball\033[27m',			#13
-				'Bombs',								#14
-				'\033[7mPower Bombs\033[27m',			#15
-				'Missiles',								#16
-				'\033[7mSuper Missiles\033[27m',		#17
-				'High Jump Boots',						#18
-				'Space Jump',							#19
-				'\033[7mSpeed Booster\033[27m',			#20
-				'Screw Attack',							#21
-				'\033[7mSensor Visor\033[27m',			#22
-				'\033[7mThermal Visor\033[27m',			#23
-				'\033[7mX-Ray Visor\033[27m',			#24
-				'\033[7mRefill (strike mode)\033[27m',	#25
-				'\033[7mPower Grip\033[27m',			#26
-				'\033[7mGrapple Beam\033[27m',			#27
-				'\033[7m???\033[27m',					#28
-				'\033[7m???\033[27m',					#29
-				'Surge Core',							#30
-				'Aegis Core',							#31
-				'Crystal Core',							#32
-				'Magnet Core',							#33
-				'Phazon Core',							#34
-				'Chrono Core',							#35
-				'Phantom Core',							#36
-				'Sensor Core',							#37
-				'Core Capacitor',						#38
-				'Core Dynamo',							#39
-				'',										#40
-				'',										#41
-				'',										#42
-				'',										#43
-				'',										#44
-				'',										#45
-				'',										#46
-				'',										#47
-				'',										#48
-				'',										#49
-			],
+			[],
 			{
 				'all': 'obtain every upgrade',
 			},
@@ -506,7 +455,7 @@ QUICKMOD_MENUS:dict[str|int, MenuInfo|dict] = {
 }
 
 
-QUICKFIX_MENUS:dict[str|int, MenuInfo|dict] = { #============================================================ QUICK FIX MENU
+QUICKFIX_MENUS:dict[str|int, MenuInfo|dict] = { #=============================== QUICK FIX MENU
 	'info': MenuInfo(
 		'Quick fix',
 		'What would you like to fix?',
@@ -547,4 +496,25 @@ QUICKFIX_MENUS:dict[str|int, MenuInfo|dict] = { #===============================
 	# 		'Self connecting doors'
 	# 	)
 	# }
+}
+
+
+MANAGEEXTERNALMODULES_MENUS:dict[str|int, MenuInfo|dict] = { #================== MANAGE EXTERNAL MODULES MENU
+	'info': MenuInfo(
+		'Manage external modules',
+		'type module index then select operation',
+		[],
+		{
+			'_ i': 'install',
+			'_ o': 'uninstall',
+			'_ d': 'describe',
+			'done': 'go back to Main Menu'
+		},
+		None,
+		{
+			'_ i':[3],
+			'_ o':[3],
+			'_ d':[3]
+		}
+	)
 }

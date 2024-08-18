@@ -22,6 +22,9 @@ from modules.utils import (
 	setnestedvalue
 )
 
+
+#============ CONSTANTS ================================================================================================
+
 DATAPATHS:dict[str,dict[str,list|None]] = {
 	'title': {
 		'room': [0, "GENERAL", "name"],
@@ -54,6 +57,8 @@ FONTMAGO_CHARWIDTHS = fontcharwidth([
 		'MNW#%&*@',
 	])
 
+
+#============ FUNCTIONS ================================================================================================
 
 def batchrenamer(
 		mInfo: MenuInfo,
