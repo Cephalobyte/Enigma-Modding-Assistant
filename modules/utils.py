@@ -34,6 +34,33 @@ def visiblen(txt:str):
 	return len(txt)-invisiblen(txt)
 
 
+def hinttruncate(
+		txt:str,
+		maxlen:int=20,
+		hintlen:int=0,
+		pretrunc:bool=False
+)->str:
+	"""Truncate text while leaving '…' after or before the truncation
+	
+	:param txt:
+		the text to truncate
+	:param maxlen:
+		maximum length the text can be before being truncated
+	:param hintlen:
+		number of characters to leave before or after the truncation
+	:param pretrunc:
+		set to True to truncate the start of the text
+	"""
+
+	if len(txt) <= maxlen:
+		return txt
+	newsize = maxlen-1-hintlen
+	if pretrunc:
+		return	txt[:hintlen]+'…'+txt[-newsize:]
+	
+	return		txt[:newsize]+'…'+txt[-hintlen:]
+
+
 def truncatestringwidth(txt:str, maxlen:int, units:dict[str,int]):
 	"""Truncate text based on font width"""
 	tLen = 0

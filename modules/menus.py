@@ -98,7 +98,12 @@ class MenuInfo(NamedTuple):
 		
 		return disabled
 
-	
+
+	def setprimaryoptions(self, options:list=[]):
+		"""Replace the list of primary options with another list"""
+		self.primary_options.clear()
+		self.primary_options.extend(options)
+
 	# def addsupermenuoptions(self, master:bool=False):
 	# 	"""Add selection (sel) & exit (done/quit) options"""
 	# 	self.secondary_options.setdefault(
@@ -119,10 +124,9 @@ class MenuInfo(NamedTuple):
 	# 		)[master]
 	# 	)
 		
-
-	def addnavigationoptions(self, before:bool=True, label:str='preview'):
+	def addnavigationoptions(self, prepend:bool=True, label:str='preview'):
 		"""Add left/right (</>) navigation options to the menu"""
-		if before:
+		if prepend:
 			sOptions = self.secondary_options.copy()
 			self.secondary_options.clear()
 			
@@ -130,7 +134,7 @@ class MenuInfo(NamedTuple):
 		self.secondary_options['>'] = 'see next '+ label
 		self.discriminators['>'] = self.discriminators['<'] = [1]
 		
-		if before:
+		if prepend:
 			self.secondary_options.update(sOptions)
 
 	
