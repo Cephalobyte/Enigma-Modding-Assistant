@@ -103,8 +103,7 @@ def inventory(
 		(f'\33[7m{n}\33[27m', n)[l > 2]
 		for n, l in ITEMSLIST
 	]
-	# mInfo.primary_options.extend(primaryoptions) #------------------------------add item list to primary options
-	mInfo.setprimaryoptions(primaryoptions)
+	mInfo.setprimaryoptions(primaryoptions) #-----------------------------------add item list to primary options
 
 	datas = selection.getdatas()
 	sSumm = selection.getsummary()

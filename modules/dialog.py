@@ -88,7 +88,7 @@ def optiontip(
 		tip:str,
 		margin:int = 3,
 		defau:bool = False,
-		dis:bool = False
+		disab:bool = False
 	) -> str:
 	"""Print an option with a description
 
@@ -96,12 +96,11 @@ def optiontip(
 	:param tip: option description
 	:param margin: margin length to separate the columns evenly
 	:param defau: true appears cyan instead of blue
-	:param dis: true appears darker
-	:param ret: true returns result, otherwise print directly
+	:param disab: true appears darker
 	"""
-	esc = ('','\033[90m')[dis]
+	esc = ('','\033[90m')[disab]
 	opt = str(id).rjust(margin)
-	col = ('9','3')[dis] + ('4','6')[defau]
+	col = ('9','3')[disab] + ('4','6')[defau]
 	tip = f' : \033[{col}m{tip}\033[0m'
 	
 	return esc + opt + tip
@@ -157,11 +156,13 @@ def painttext(r:int, g:int=0, b:int=0, bg:bool=False) ->str:
 	return f'\033[{esc};2;{r};{g};{b}m'
 
 
+#------ animations -------------------------------------------------------------
+
 def welcome():
 	logo = openasciiart("logo")
 	title = openasciiart("title")
-	blues = [30,34,94,36]
-	greys = [30,90,37,97]
+	blues = [34,94,36]
+	greys = [90,37,97]
 	tw, th = terminalsize() #---------------------------------------------------terminal width & height
 
 	th = max(len(logo), len(title), th)
@@ -560,7 +561,7 @@ def optiondialog(
 
 def menudialog(
 		menuinfo: MenuInfo,
-		selsum: SelectionSummary,
+		selsum: SelectionSummary|None = None,
 		bigheader: bool = False,
 		message: tuple[str, ...] = (),
 		columnwidth: int = 0,
@@ -589,14 +590,14 @@ def menudialog(
 		menuinfo.primary_options,
 		menuinfo.secondary_options,
 		menuinfo.default_value,
-		menuinfo.getdisabledoptions(selsum),
+		menuinfo.getdisabledoptions(selsum) if selsum else [],
 		cnumber
 	)
 
 
 def polymenudialog(
 		menuinfo: MenuInfo,
-		selsum: SelectionSummary,
+		selsum: SelectionSummary|None = None,
 		bigheader: bool = False,
 		message: tuple[str, ...] = (),
 		columnwidth: int = 0,
@@ -613,7 +614,7 @@ def polymenudialog(
 	:param strict: filter user requests down to the given options
 	"""
 	# disabled = menuinfo.getdisabledoptions(selectiontypes)
-	disabled = menuinfo.getdisabledoptions(selsum)
+	disabled = menuinfo.getdisabledoptions(selsum) if selsum else []
 	primaries = menuinfo.primary_options
 	secondaries = menuinfo.secondary_options
 
@@ -684,7 +685,7 @@ def polymenudialog(
 				requests[i] = r = int(r) #--------------------------------------convert to digit
 
 			if r in disabled or ( #---------------------------------------------if the request is a disabled option...
-				strict and r not in validoptions #------------------------------------or is not in the options when the menu is strict,
+				strict and r not in validoptions #------------------------------or is not in the options when the menu is strict,
 			):
 				requests[i] = None #--------------------------------------------mark request for deletion
 				progress(f"{r} removed")

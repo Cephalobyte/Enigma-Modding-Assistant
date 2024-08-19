@@ -1,7 +1,7 @@
 {
 	"META": {
 		"legal_mode": false,
-		"game_version": [1, 31, 0]
+		"game_version": [1, 33, 0]
 	},
 	"PERSONAL_DIRECTORY_PATHS": {
 		"encrypt_dir": ".\\converted",

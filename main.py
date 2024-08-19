@@ -1,5 +1,4 @@
 from os import system
-from pathlib import Path
 
 from modules.menus import MAIN_MENUS
 from modules.dialog import (
@@ -7,7 +6,8 @@ from modules.dialog import (
 	seeyounextmission,
 	breadcrumbtrail,
 	menudialog,
-	header
+	header,
+	woops
 )
 from modules.filemanagement import (
 	SelectionInfo,
@@ -31,13 +31,6 @@ def main():
 		breadcrumbs = []
 		message = trail(), mpselectionpreview(selection)
 
-		# print(
-		# 	'sDis :', *selection.discriminators,
-		# 	'mDis :', *mInfo.discriminators.items(),
-		# 	sep='\n'
-		# )
-		# print('sSum :', *sSumm)
-
 		match (choice := menudialog(mInfo, sSumm, True, message)):
 
 			case 'sel': #======================================================= SELECT ================================
@@ -45,6 +38,14 @@ def main():
 				trail([choice])
 				
 				selection = mpfileselection()
+
+			case 'pf': #======================================================== PREFERENCES ===========================
+				woops('feature not implemented yet')
+
+			case 'mem': #======================================================= MANAGE EXTERNAL MODULES ===============
+				from modules.externaldependecies import manageexternalmodules
+
+				manageexternalmodules([choice])
 
 			case 'quit':
 				break
@@ -92,6 +93,7 @@ def main():
 
 if __name__ == '__main__':
 	system('cls') #-------------------------------------------------------------allows ANSI escape sequences
+	
 	welcome()
 
 	main()	#-------------------------------------------------------------------run program

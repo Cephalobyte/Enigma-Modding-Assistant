@@ -9,23 +9,24 @@ from modules.filemanagement import SelectionSummary
 
 class MenuInfo(NamedTuple):
 	"""Tuple containing title, options & more when creating a menu
-
-	title:
+	
+	:Attributes:
+	#### title `str`:
 		title displayed in the green rectangle
-	prompt:
+	#### prompt `str`:
 		prompt displayed before the options
-	primary_options:
+	#### primary_options `list[str]`:
 		list of options that can be chosen by their index
-	secondary_options:
+	#### secondary_options `dict[Any, str] = {}`:
 		dictionary of options that can be chosen by their key
-	default_value:
+	#### default_value `int|str|None = None`:
 		option index or key chosen by default when prompt is skipped
-	discriminators:
+	#### discriminators `dict[int|str, list[str|bool]] = {}`:
 		dictionary of lists that excludes certain options (key) when
 		the selection is empty or only contains listed discriminators
 		(value)
 
-	Usage::
+	### Usage::
 
 	    MenuInfo(
 	        'My menu',
@@ -45,8 +46,8 @@ class MenuInfo(NamedTuple):
 	        },
 	        3,                       #default
 	        {
-	            0: ['data'],	 # disable if selection only has data
-	            1: [2],			 # ^^ has multiple files
+	            0: ['data'],     # disable if selection only has data
+	            1: [2],          # ^^ has multiple files
 	            2: [1],          # ^^ has only one file
 	                             # always enabled
 	            4: [3],          # always disabled
@@ -95,7 +96,7 @@ class MenuInfo(NamedTuple):
 				or all([c in discC for c in selsum.are_compressed])
 			):
 				disabled.append(opt)
-		
+
 		return disabled
 
 
@@ -104,26 +105,7 @@ class MenuInfo(NamedTuple):
 		self.primary_options.clear()
 		self.primary_options.extend(options)
 
-	# def addsupermenuoptions(self, master:bool=False):
-	# 	"""Add selection (sel) & exit (done/quit) options"""
-	# 	self.secondary_options.setdefault(
-	# 		'sel',
-	# 		(
-	# 			'modify current selection',
-	# 			'select multiple files to edit at once'
-	# 		)[master]
-	# 	)
-	# 	self.secondary_options.setdefault(
-	# 		(
-	# 			'done',
-	# 			'quit'
-	# 		)[master],
-	# 		(
-	# 			'done for this batch?',
-	# 			'done for now?'
-	# 		)[master]
-	# 	)
-		
+
 	def addnavigationoptions(self, prepend:bool=True, label:str='preview'):
 		"""Add left/right (</>) navigation options to the menu"""
 		if prepend:
@@ -137,7 +119,7 @@ class MenuInfo(NamedTuple):
 		if prepend:
 			self.secondary_options.update(sOptions)
 
-	
+
 	def addbatchmanipoptions(self):
 		"""Add reset (res) & confirm (ok) options to the menu"""
 		self.secondary_options.setdefault('res', 'reset changes & return')
@@ -506,19 +488,10 @@ QUICKFIX_MENUS:dict[str|int, MenuInfo|dict] = { #===============================
 MANAGEEXTERNALMODULES_MENUS:dict[str|int, MenuInfo|dict] = { #================== MANAGE EXTERNAL MODULES MENU
 	'info': MenuInfo(
 		'Manage external modules',
-		'type module index then select operation',
+		'type module index to install/uninstall it',
 		[],
 		{
-			'_ i': 'install',
-			'_ o': 'uninstall',
-			'_ d': 'describe',
 			'done': 'go back to Main Menu'
-		},
-		None,
-		{
-			'_ i':[3],
-			'_ o':[3],
-			'_ d':[3]
 		}
 	)
 }
