@@ -1,5 +1,5 @@
 from sys import exc_info, exit
-from os import path as osp
+from pathlib import Path
 from time import sleep
 import re
 import sys
@@ -134,7 +134,8 @@ def ohno(err:str, stop:bool=True, out:bool=True):
 	#stolen from https://stackoverflow.com/questions/1278705/when-i-catch-an-exception-how-do-i-get-the-type-file-and-line-number
 	exc_type, exc_obj, exc_tb = exc_info()
 	del exc_obj
-	fname = osp.split(exc_tb.tb_frame.f_code.co_filename)[1]
+	
+	fname = str(Path(exc_tb.tb_frame.f_code.co_filename).name)
 	print('\033[4;91m[!]'+f' {err} '.center(94,'_')+'[!]', end='\n\033[0;0m')
 	print(str(exc_type))
 	print(fname+f' line {exc_tb.tb_lineno}')
@@ -433,13 +434,11 @@ def filepathdialog(
 	def readpath():
 		if defau is not None:
 			print(f'\033[s\033[90m{defau}\033[u\033[39m', end='')
-		
-		if not (path := input().strip('"\'& ').rstrip('\\/')): #----------------strip drag n drop characters (' and & is for vscode's terminal) & directory trailing slashes
-			return defau #------------------------------------------------------if question is skipped, return default answer
-		if acceptdir and osp.isdir(path):
-			return path
-		if acceptfile and osp.isfile(path):
-			return path
+		#------ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -------------------strip drag n drop characters (' and & is for vscode's terminal) & directory trailing slashes
+		if not (path := input().strip('"\'& ').rstrip('\\/')): return defau #---if question is skipped, return default answer
+		path = Path(path)
+		if acceptdir and path.is_dir(): return path
+		if acceptfile and path.is_file(): return path
 		return None
 
 	steptodo(question, True)

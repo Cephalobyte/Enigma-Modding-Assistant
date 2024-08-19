@@ -1,4 +1,4 @@
-from os import system#, path as osp #--------------------------------------------will allow to use colored text
+from os import system #---------------------------------------------------------will allow to use colored text
 import sys
 
 sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory

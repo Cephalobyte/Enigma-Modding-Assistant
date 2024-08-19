@@ -102,6 +102,7 @@ class ExternalModule:
 		
 		try:
 			progress('Installing module from pip')
+			progress('this may take a dozen seconds')
 			subprocess.check_call(
 				[sys.executable, "-m", "pip", "install", self.name],
 				stdout=output,
@@ -132,6 +133,7 @@ class ExternalModule:
 
 		try:
 			progress('Uninstalling module from pip')
+			progress('this may take a dozen seconds')
 			subprocess.check_call(
 				[sys.executable, "-m", "pip", "uninstall", "-y", self.name],
 				stdout=output, stderr=output

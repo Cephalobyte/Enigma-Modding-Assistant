@@ -1,6 +1,5 @@
 from typing import NamedTuple
 import os
-from os import path as osp
 from pathlib import Path
 import json, zlib
 import re
@@ -174,7 +173,6 @@ FILETYPES_VALIDCOLORS = {
 	'data':		'7', #white
 }
 
-# ROOTDIR = osp.dirname(osp.abspath(__file__)).removesuffix('\\modules')
 ROOTDIR = Path(__file__).parent.parent
 
 #============ GENERIC ==================================================================================================
@@ -195,7 +193,8 @@ def listfilesindir(dir:str, ext:str|None=None) ->list[str]:
 
 def getshortname(path:str, typ:str|None=None) ->str:
 	"""get the name part of a filepath without its extension"""
-	shortname = osp.splitext(osp.split(path)[1])[0]
+	
+	shortname = Path(path).stem
 	if typ is None:
 		return shortname
 	return shortname.removeprefix(typ+'.')
@@ -246,7 +245,8 @@ def mpfiletypefrompath(fPath:str) ->MPFileType:
 	"""Identify the file type and compression state of a file path
 	"""
 	
-	fName, fExt = osp.splitext(osp.split(fPath)[1])
+	fName = Path(fPath).stem
+	fExt = Path(fPath).suffix
 
 	if fExt == '.json': #-------------------------------------------------------if uncompressed (decrypted) into a json
 		fType = fName.split('.')[0] #-------------------------------------------find prefix
@@ -276,7 +276,7 @@ def mpfileselection(
 			],
 			file=True
 		)):
-		fName = osp.split(fp)[1]
+		fName = Path(fp).name
 
 		if fPaths.count(fp) > 1:
 			progress(f'{fName} already selected')
@@ -292,7 +292,7 @@ def mpfileselection(
 				fPaths.remove(fp) #---------------------------------------------remove glob pattern from path list
 				continue
 		
-		if not osp.isfile(fp):
+		if not Path(fp).is_file:
 			progress(f"{fName} can't be found")
 			fPaths.remove(fp)
 	
@@ -304,7 +304,7 @@ def mpfileselection(
 		if any(
 			fp.endswith('.mp_'+ext) or (
 				fp.endswith('.json') and
-				osp.split(fp)[1].startswith(ext+'.')
+				Path(fp).name.startswith(ext+'.')
 			)
 			for ext in FILETYPES_VALIDCOLORS
 		)
@@ -464,10 +464,10 @@ def dicttomp(jsondata:list[dict], fPath:str, overwrite:bool=False) ->bool:
 	"""Write a Metroid Planets file from a list of dicts
 	"""
 	
-	if not overwrite and osp.exists(fPath):
+	if not overwrite and Path(fPath).exists():
 		from modules.dialog import yesnodialog, woops
 		
-		woops(f'File {osp.split(fPath)[1]} already exists')
+		woops(f'File {Path(fPath).name} already exists')
 		if not yesnodialog(
 			'Overwrite file?',
 			defau=False
@@ -498,12 +498,12 @@ def dicttomp(jsondata:list[dict], fPath:str, overwrite:bool=False) ->bool:
 
 def dicttojson(jsondata:list[dict], fPath:str, overwrite:bool=False) ->bool:
 	"""Write a json file from a list of dicts.
-	Return true if successful
+	Return True if successful
 	"""
-	if not overwrite and osp.exists(fPath):
+	if not overwrite and Path(fPath).exists():
 		from modules.dialog import yesnodialog, woops
 
-		woops(f'File {osp.split(fPath)[1]} already exists')
+		woops(f'File {Path(fPath).name} already exists')
 		if not yesnodialog(
 			'Overwrite file?',
 			defau=False
