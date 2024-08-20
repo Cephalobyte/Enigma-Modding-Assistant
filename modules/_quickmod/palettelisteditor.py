@@ -127,13 +127,13 @@ def palettelisteditor(
 
 			case 'res':
 				datas = selection.getdatas()
-				progress("Palette order reverted", True)
+				progress("Palette order reverted", 1)
 				break
 
 			case 'ok':
 				progress("Saving palette order")
 				selection.setdatas(datas, True)
-				progress("Palette order saved!", True)
+				progress("Palette order saved!", 1)
 				break
 
 			case 'a2s':
@@ -369,14 +369,14 @@ def manualpaletteorder(datas:dict[int,list[dict]], page:int):
 			if any(i > 31 for i in request): #----------------------------------if any of the values is over 31, ignore request
 				raise ValueError
 		except ValueError:
-			progress(f'{r} removed')
+			progress(f'{r} removed', 2)
 			continue
 
 		request += [r.startswith('#')] #----------------------------------------3rd parameter determines if change should be "hard"
 		requests.append(request)
 	
 	if not requests:
-		progress("Operation cancelled",True)
+		progress("Operation cancelled", 2)
 		return datas
 	
 	requests.sort()
@@ -483,7 +483,7 @@ def updatepalettelist(
 		try:
 			data[0]["PALETTES"][slot] = palettes[pId]
 		except IndexError:
-			progress("can't put palette %i in slot %i"%(pId, slot))
+			progress("can't put palette %i in slot %i"%(pId, slot), 2)
 	return data
 
 
@@ -507,7 +507,7 @@ def updatetilespalette(data:list[dict], changes:dict[int,int]) ->list[dict]:
 						column[t] += changes[pId] #-----------------------------add the appropriate amount to the tile
 						stats += 1
 	print('')
-	progress(f'Updated {stats} tiles', True)
+	progress(f'Updated {stats} tiles', 1)
 	return data
 
 # def autopaletteorder(datas, mode) ->dict[list[dict]]:

@@ -108,7 +108,7 @@ class ExternalModule:
 				stdout=output,
 				stderr=output
 			)
-			progress(f'module "{self.name}" installed', True)
+			progress(f'module "{self.name}" installed', 1)
 			self.updatelocation()
 		
 		except subprocess.CalledProcessError as e:
@@ -138,7 +138,7 @@ class ExternalModule:
 				[sys.executable, "-m", "pip", "uninstall", "-y", self.name],
 				stdout=output, stderr=output
 			)
-			progress(f'module "{self.name}" uninstalled', True)
+			progress(f'module "{self.name}" uninstalled', 1)
 			self.updatelocation('')
 		
 		except subprocess.CalledProcessError as e:

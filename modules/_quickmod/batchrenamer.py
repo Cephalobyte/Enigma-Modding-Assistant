@@ -2,10 +2,7 @@ import string
 
 from modules.menus import MenuInfo
 from modules.dialog import (
-	header,
 	breadcrumbtrail,
-	steptodo,
-	protip,
 	progress,
 	textdialog,
 	menudialog,
@@ -88,13 +85,13 @@ def batchrenamer(
 			
 			case 'res':
 				datas = selection.getdatas()
-				progress(goal.capitalize()+" names reverted", True)
+				progress(goal.capitalize()+" names reverted", 1)
 				break
 
 			case 'ok':
 				progress(f"Saving {goal.capitalize()} names")
 				selection.setdatas(datas, True)
-				progress(goal.capitalize()+" names saved!", True)
+				progress(goal.capitalize()+" names saved!", 1)
 				break
 
 			case 0:

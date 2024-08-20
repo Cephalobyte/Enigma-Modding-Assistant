@@ -140,13 +140,13 @@ def inventory(
 
 				case 'res':
 					datas = selection.getdatas()
-					progress("Inventories reverted", True)
+					progress("Inventories reverted", 1)
 					break
 
 				case 'ok':
 					progress("Saving inventories")
 					selection.setdatas(datas, True)
-					progress("Inventories saved", True)
+					progress("Inventories saved", 1)
 					break
 
 				case 'all'|_:
@@ -297,7 +297,7 @@ def editinventory(datas:dict[int,list[dict]], rId:int):
 				amount = askammoamount(rId) #-----------------------------------update amount desired
 		
 		case _:
-			if rId not in allids: #---------------------------------------------if request id is not present in inventory, ignore request
+			if rId not in range(max(allids)): #---------------------------------------------if request id is not present in inventory, ignore request
 				return datas #failsafe
 	
 	editupgrade(rId, amount)

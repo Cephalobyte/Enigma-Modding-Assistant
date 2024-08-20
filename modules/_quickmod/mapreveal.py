@@ -54,13 +54,13 @@ def mapreveal(
 
 				case 'res':
 					datas = selection.getdatas()
-					progress("Map reveal reverted", True)
+					progress("Map reveal reverted", 1)
 					break
 
 				case 'ok':
 					progress("Saving map reveal")
 					selection.setdatas(datas, True)
-					progress("Map reveal saved!", True)
+					progress("Map reveal saved!", 1)
 					break
 
 				case 'ar'|'av'|'ae' :
@@ -123,6 +123,7 @@ def showmapreveal(datas:dict[int, list[dict]], page:int=0):
 def editmapreveal(data, reveal:bool=False, visit:bool=False, elevator:bool=False):
 	for i in data[0]["MAP"]:
 		for j in i:
+			if isinstance(j, int): continue #-----------------------------------ignore if column is empty
 			j["revealed"] = max(int(reveal), j["revealed"])
 			j["visited"] = max(int(visit), j["visited"])
 			j["elevator"] = max(int(elevator), j["elevator"])

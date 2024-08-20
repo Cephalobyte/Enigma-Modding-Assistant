@@ -1,14 +1,12 @@
-from os import system #---------------------------------------------------------will allow to use colored text
 import sys
 
-sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory
+sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory (allows standalone execution)
 
 from modules.menus import DECRYPT_MENUS
 from modules.dialog import (
 	header,
 	breadcrumbtrail,
 	progress,
-	seeyounextmission,
 	boolinfo,
 	filepathdialog,
 	yesnodialog,
@@ -151,10 +149,10 @@ def decrypt(
 
 		if dicttojson(data, outputdir+f'\\{fType}.{fName}.json', overwrite): #--write to file and verify if successful
 			
-			progress(f'{fType.capitalize()} "{fName}" decrypted!', True)
+			progress(f'{fType.capitalize()} "{fName}" decrypted!', 1)
 			continue
 		
-		progress('Export cancelled')
+		progress('Export cancelled', 2)
 
 
 def sortroom(roomDict:dict):
@@ -317,8 +315,11 @@ def sortworld(header:dict, worldDict:dict):
 
 
 if __name__ == '__main__':	#---------------------------------------------------if this script (decrypt.py) was run, (to prevent clearing a non empty terminal)
+	from os import system
+	from modules.graphics.animations import seeyounextmission
+
 	system('cls')	#-----------------------------------------------------------clear terminal to allow ANSI escape sequences (such as fancy colors)
 
 	decrypter(SelectionInfo(discriminators=[False]))
-	
+
 	seeyounextmission()

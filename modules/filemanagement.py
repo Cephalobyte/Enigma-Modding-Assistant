@@ -198,7 +198,30 @@ def getshortname(path:str, typ:str|None=None) ->str:
 	if typ is None:
 		return shortname
 	return shortname.removeprefix(typ+'.')
+
+
+def getabsolutefromroot(fpath:str|Path, root:str|Path)->str|Path:
+	if (returnstring := isinstance(fpath, str)): path = Path(fpath)
+	else: path = fpath
 	
+	if path.is_absolute():
+		return fpath
+	
+	if isinstance(root, str): root = Path(root)
+	path = root/path
+
+	if returnstring: return str(path)
+	return path
+
+
+def splitglobpattern(path:str)->tuple[str,str|None]:
+	if not any(path.count(char) for char in '*?['): #---------------------------if not any glob wildcard is present in the path,
+		return path, None #-----------------------------------------------------return full path and None as a glob pattern
+	pattern = r"[\*\?\[]"
+	i = re.search(pattern, path).start() #--------------------------------------store first occurence of glob character
+	
+	return path[:i], path[i:] #-------------------------------------------------return path before index and pattern after index
+
 
 #------ 1.27g decoding -------------------------------------------------------------------------------------------------
 
@@ -217,7 +240,7 @@ def opentxt(path:str) ->str:
 		return file.read()
 
 def openasciiart(graphicname:str) ->list[str]:
-	graphicpath = ROOTDIR/'modules'/'_graphics'/f'{graphicname}.txt'
+	graphicpath = ROOTDIR/'modules'/'graphics'/f'{graphicname}.txt'
 	with open(graphicpath, encoding="utf-8") as file:
 		return file.read().splitlines()
 
@@ -274,26 +297,46 @@ def mpfileselection(
 				'Use .\ for paths relative to '+ str(ROOTDIR),
 				'Use *, **, ?, [a-z], etc. as glob pattern wildcards'
 			],
-			file=True
+			'.\\converted\\*.mp_room',
+			filemode=True,
 		)):
 		fName = Path(fp).name
 
 		if fPaths.count(fp) > 1:
-			progress(f'{fName} already selected')
+			progress(f'{fName} already selected', 2)
 			fPaths.remove(fp)
 			continue
 
-		print('current path is :',fp)
+		ap = getabsolutefromroot(fp, ROOTDIR) #---------------------------------if path is relative, set to absolute
+		ap, pat = splitglobpattern(ap) #----------------------------------------split directory path and glob pattern
 
-		if any(fp.count(char) for char in '*?['): #-----------------------------if glob wildcards are present in the path,
-			if (newpaths := glob(fp, root_dir=str(ROOTDIR), recursive=True)): #------if a glob search returns results,
-				ifp = fPaths.index(fp)
-				fPaths = fPaths[:ifp] + newpaths + fPaths[ifp:] #---------------insert new paths in selection
-				fPaths.remove(fp) #---------------------------------------------remove glob pattern from path list
-				continue
+		progress('searching valid file(s) in')
+		print(ap)
+
+		# if any(fp.count(char) for char in '*?['): #-----------------------------if glob wildcards are present in the path,
+		# 	if (newpaths := glob(fp, root_dir=str(ROOTDIR), recursive=True)): #-if a glob search returns results,
+		# 		ifp = fPaths.index(fp)
+		# 		fPaths = fPaths[:ifp] + newpaths + fPaths[ifp:] #---------------insert new paths in selection
+		# 		fPaths.remove(fp) #---------------------------------------------remove glob pattern from path list
+				
+		# 		# for np in newpaths:
+		# 			# progress(str(Path(np).relative_to(Path(fp))), 1)
+		# 			# progress(np.removeprefix(), 1)
+		# 		continue
+
+		if pat is not None:
+			try: newpaths = [str(p) for p in Path(ap).glob(pat)]
+			except ValueError: progress(f'{pat} is not a valid glob pattern', 2)
+
+			ifp = fPaths.index(fp)
+			fPaths = fPaths[:ifp] + newpaths + fPaths[ifp:] #-------------------insert new paths in selection
+			fPaths.remove(fp) #-------------------------------------------------remove glob pattern from path list
+
+			for np in newpaths:
+				progress(Path(np).relative_to(ap), 1)
 		
-		if not Path(fp).is_file:
-			progress(f"{fName} can't be found")
+		if not Path(ap).exists():
+			progress(f"{fName} can't be found", 2)
 			fPaths.remove(fp)
 	
 	# print(*fPaths, sep='\n')
@@ -311,15 +354,15 @@ def mpfileselection(
 	]
 	
 	if not fPaths: #------------------------------------------------------------if fPaths is empty, return empty selection
-		progress((
-			'Selection cleared',
-			'Operation cancelled'
-		)[mandatory], True)
+		progress(
+			'Operation cancelled' if mandatory else 'Selection cleared',
+			2 if mandatory else 0
+		)
 		return SelectionInfo()
 
 	fTypes = [mpfiletypefrompath(fp) for fp in fPaths] #------------------------MPFileTypes of each path (type & compression state)
 
-	progress('Selection updated!', True)
+	progress('Selection updated!', 1)
 	return SelectionInfo(
 		fPaths,
 		fTypes,
@@ -432,6 +475,7 @@ def jsontodict(fPath:str) ->list[dict]|None:
 	
 	except json.decoder.JSONDecodeError as e: #---------------------------------print error and snippet of the wrong part
 		ohno(e, False, False)
+		print(fPath)
 		print(e.doc[max(e.pos-100, 0) : e.pos],
 			'\33[41;97m',
 			e.doc[e.pos : min(e.pos+100, len(e.doc))],

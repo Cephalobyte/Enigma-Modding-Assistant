@@ -1,18 +1,16 @@
 from sys import exc_info, exit
 from pathlib import Path
-from time import sleep
 import re
 import sys
 
-sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory
+sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory (allows standalone execution)
 
 from modules.menus import MenuInfo
 from modules.filemanagement import (
 	SelectionSummary,
 	MPFileType,
 	FILETYPES_VALIDCOLORS,
-
-	openasciiart
+	ROOTDIR
 )
 from modules.utils import (
 	rowsfromlist,
@@ -20,11 +18,8 @@ from modules.utils import (
 	# visiblen
 )
 from modules.graphics import (
-	GWG,
-
-	flushprint,
-	fadegraphic,
-	fadegraphics
+	sleep,
+	flushprint
 )
 
 
@@ -106,10 +101,24 @@ def optiontip(
 	return esc + opt + tip
 
 
-def progress(prog:str, done=False):
-	"""Report the step progression"""
-	if not done: prog += '...'
-	print('\033[95m'+f' {prog} '.center(80,'▒') +'\033[0m')
+def progress(prog:str, mode:int=0):
+	"""Report the step progression
+
+	:param prog: message to print
+	:param mode:\n
+		0: in progress...\n
+		1: done\n
+		2: something happened
+	"""
+	prog = str(prog)
+	wid = 80
+
+	if mode == 0: prog += '...'
+	if mode == 2:
+		prog = f'\33[33m{prog}\33[95m'
+		wid = 90
+	
+	print('\033[95m'+f' {prog} '.center(wid,'▒') +'\033[39m')
 
 
 def woops(warn:str, stop:bool=False):
@@ -157,81 +166,6 @@ def painttext(r:int, g:int=0, b:int=0, bg:bool=False) ->str:
 	return f'\033[{esc};2;{r};{g};{b}m'
 
 
-#------ animations -------------------------------------------------------------
-
-def welcome():
-	logo = openasciiart("logo")
-	title = openasciiart("title")
-	blues = [34,94,36]
-	greys = [90,37,97]
-	tw, th = terminalsize() #---------------------------------------------------terminal width & height
-
-	th = max(len(logo), len(title), th)
-	tw = max(*(len(s) for s in title), tw)
-	flushprint(f'\33[8;{th};{tw}t') #-------------------------------------------resize window
-	
-	flushprint('\33[2J\33[0;0H\33[s') #-----------------------------------------erase display and save cursor position at top of screen
-	fadegraphic(logo, blues) #--------------------------------------------------
-	sleep(.25)
-	
-	fadegraphic(title, greys, transpace=True)
-	sleep(1)
-
-	fadegraphics(
-		GWG(logo, list(reversed(blues[1:]))),
-		GWG(title, list(reversed(greys[1:]))),
-		transpace=True
-	)
-
-	flushprint('\33[2J\33[u') #-------------------------------------------------erase display and reset cursor position
-
-
-def seeyounextmission():
-	tw, th = terminalsize()
-	message = 'See you next mission'
-	msgl = len(message)
-	speed = 2
-	frame = 1/60
-
-	message = [message[i:i+speed] for i in range(0, msgl, speed)] #-------------split every n character
-	htw = (tw+1)//2
-	hth = (th+1)//2
-	clearcolsL = ('\33[1K│\33[1B\33[1D'*th)
-	clearcolsR = ('\33[0K│\33[1A\33[1D'*th)
-	clearrowsT = '\33[1J'
-	clearrowsB = '\33[J'
-	vbar = f'\33[2J\33[;{htw}H'+('│\33[1B\33[1D')*th #--------------------------vertical bar
-
-	for x in range(1, htw, speed):
-		start = f'\33[;{x}H'
-		jump = tw-x*2
-		switchside = f'\33[{jump}C'
-		flushprint(start, clearcolsL, switchside, clearcolsR)
-		sleep(frame)
-
-	flushprint(vbar)
-	sleep(frame)
-
-	for y in range(1, hth, speed//2):
-		start = f'\33[{y};{htw}H'
-		jump = th-y*2
-		switchside = f'\33[{jump}B'
-		flushprint(start, clearrowsT, switchside, clearrowsB)
-		sleep(frame)
-
-	flushprint(f'\33[2J\33[{hth};{htw - (msgl//2)}H')
-
-	for i in message:
-		flushprint(i)
-		sleep(frame)
-
-	sleep(1)
-
-	for i in range(0, th, speed):
-		flushprint(f'\33[8;{th-i};{tw}t')
-		sleep(frame)
-
-
 #------ Type info --------------------------------------------------------------
 
 def boolinfo(value:bool|int, label:str='', look:str|None=None) ->str:
@@ -271,6 +205,13 @@ def pe2c():
 	input('\033[4mPress Enter to continue...\033[24m')
 
 
+def prhint(hint:str, col:int=1):
+	"""print a dark hint and replace the cursor to the specified column
+	(beginning of line by default)"""
+	
+	print(f'\033[90m{hint}\033[{col}G\033[39m', end='')
+
+
 def yesnodialog(question:str, tips:list=[], defau:bool|None=None) ->bool:
 	"""Get a boolean from a "yes or no" dialog input
 
@@ -281,11 +222,11 @@ def yesnodialog(question:str, tips:list=[], defau:bool|None=None) ->bool:
 	(ignore case)
 	"""
 
-	if defau is not None:
-		prompt = ('y/\033[96mn\033[0m', '\033[96my\033[0m/n')[defau]
-		prompt = f'({prompt}):'
-	else:
+	if defau is None:
 		prompt = '(y/n): '
+	else:
+		prompt = '\033[96my\033[0m/n' if defau else 'y/\033[96mn\033[0m'
+		prompt = f'({prompt}): '
 
 	def readyn():
 		if not (yn := input(prompt)): #-----------------------------------------if question is skipped, return default answer
@@ -317,7 +258,7 @@ def numberdialog(
 
 	def readnum():
 		if defau is not None:
-			print(f'\033[s\033[90m{defau}\033[u\033[39m', end='')
+			prhint(defau)
 		
 		if not (num := input()): #----------------------------------------------if question is skipped, return default answer
 			return defau
@@ -376,21 +317,20 @@ def textdialog(
 		tips += [f"String length should be under {maxlen}{uName}"]
 	
 	def readtext():
-		if defau is not None:
-			print(f'\033[s\033[90m{defau}\033[u\033[39m', end='')
+		if defau is not None: prhint(defau)
 		
 		if not (text := input()): #---------------------------------------------if question is skipped, return default answer
 			return defau
 		
 		if maxlen is not None:
-			if units is not None:
+			if units is not {}:
 				tLen = 0
 				for i, c in enumerate(text):
 					print(i, c, tLen, maxlen, sep='\t')
 					if (tLen := tLen + units.get(c, 1)) > maxlen:
 						text = text[:i]
 						progress(f'String length over maximum ({tLen}{uName})')
-						progress('Truncated to '+text, True)
+						progress('Truncated to '+text, 1)
 						break
 
 			else:
@@ -411,7 +351,7 @@ def textdialog(
 
 def filepathdialog(
 		question:str = '',
-		tips:list = ['You can drag & drop your file here'],
+		tips:list = [],
 		defau:str|None = None,
 		acceptdir:bool = False,
 		acceptfile:bool = True,
@@ -419,26 +359,27 @@ def filepathdialog(
 	"""Get a file or directory path from a dialog input"""
 
 	accepted = []
-	if acceptfile:
-		accepted.append('file')
-	if acceptdir:
-		accepted.append('directory')
+	if acceptfile: accepted.append('file')
+	if acceptdir: accepted.append('directory')
 	accepted = ' or '.join(accepted)
 
-	if not question:
-		question = f'Enter the {accepted} path'
+	if not question: question = f'Enter the {accepted} path'
 	
-	if defau is not None:
-		tips = tips.copy() + ['Leave empty to keep current path'] #-------------copy "tips" to prevent reference and constantly adding the same tip if asked again
+	tips = tips.copy() + [ #----------------------------------------------------copy "tips" to prevent reference and constantly adding the same tip if asked again
+		'You can drag & drop your file/folder here',
+		f'Use .\ for paths relative to {ROOTDIR}',
+	] + [
+		'Leave empty to keep current path'
+	] if defau is not None else [] #--------------------------------------------add one more tip if default value is not None
 
 	def readpath():
-		if defau is not None:
-			print(f'\033[s\033[90m{defau}\033[u\033[39m', end='')
+		if defau is not None: prhint(defau)
 		#------ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -------------------strip drag n drop characters (' and & is for vscode's terminal) & directory trailing slashes
-		if not (path := input().strip('"\'& ').rstrip('\\/')): return defau #---if question is skipped, return default answer
-		path = Path(path)
-		if acceptdir and path.is_dir(): return path
-		if acceptfile and path.is_file(): return path
+		if not (fPath := input().strip('"\'& ').rstrip('\\/')): return defau #--if question is skipped, return default answer
+		if not (path := Path(fPath)).is_absolute(): #---------------------------if path is relative, combine it with project ROOTDIR
+			fPath = str(ROOTDIR/path)
+		if acceptfile and Path(path).is_file(): return fPath
+		if acceptdir and Path(path).is_dir(): return fPath
 		return None
 
 	steptodo(question, True)
@@ -455,23 +396,26 @@ def filepathdialog(
 def listdialog(
 		question:str,
 		tips:list[str]=[],
+		hint:str|None = None,
 		separator:str=' ',
-		file:bool=False
+		filemode:bool=False
 	) ->list[str]:
 	"""Get a list of entries from one input
 
 	:param question: the question to ask
 	:param tips: optional list of strings to provide details
+	:param hint: example to format
 	:param separator: the string to split the input
-	:param file: looks for file paths with drive at the beginning of the path
+	:param filemode: looks for file paths with drive at the beginning of the path
 	"""
 	steptodo(question, True)
 	for tip in tips:
 		protip(tip)
 
+	if hint is not None: prhint(hint)
 	answer = input()
 	
-	if not file:
+	if not filemode:
 		#---- regular mode ------
 		return answer.split(separator)
 
@@ -479,7 +423,7 @@ def listdialog(
 	# pat = r"[A-z]:.*?(?:(?=[A-z]:)|$)"
 	pat = r"(?:[A-z]:|\.+[\\\/])[^:<>|]*?(?:(?=[A-z]:)|(?=\.+[\\\/])|$)" #------either (?: a drive letter [A-z]: or a relative path \.+[\\\/] ) followed by any valid path character [^:<>|]*? until either (?: a drive letter or a relative path or end of string $ )
 	
-	fPaths = [f.strip('\'" &') for f in re.findall(pat, answer)] #--------------make a list of found paths stripped of quotes, spaces and drag n drop symbols
+	fPaths = [f.strip('\'"& ') for f in re.findall(pat, answer)] #--------------make a list of found paths stripped of quotes, spaces and drag n drop symbols
 
 	return fPaths
 
@@ -694,5 +638,5 @@ def polymenudialog(
 
 		woops('No valid requests were found, try again') #----------------------if not, start the loop over
 	
-	progress('Requests : '+', '.join([str(r) for r in requests]), True)
+	progress('Requests : '+', '.join([str(r) for r in requests]), 1)
 	return requests

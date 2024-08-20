@@ -1,13 +1,11 @@
-from os import system #---------------------------------------------------------will allow to use colored text
 import sys
 
-sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory
+sys.path.insert(0, sys.path.pop(0).removesuffix('\\modules')) #-----------------set root directory (allows standalone execution)
 
 from modules.menus import QUICKFIX_MENUS
 from modules.dialog import (
 	header,
 	breadcrumbtrail,
-	seeyounextmission,
 	boolinfo,
 	filepathdialog,
 	menudialog,
@@ -87,6 +85,9 @@ def quickfix(
 
 
 if __name__ == '__main__':	#---------------------------------------------------if this script (encrypt.py) was run, (to prevent clearing a non empty terminal)
+	from os import system
+	from modules.graphics.animations import seeyounextmission
+
 	system('cls')	#-----------------------------------------------------------clear terminal to allow ANSI escape sequences (such as fancy colors)
 
 	quickfix()

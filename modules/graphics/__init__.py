@@ -1,22 +1,6 @@
-from typing import NamedTuple
 from time import sleep
-from modules.utils import (
-	terminalsize
-)
 
-
-#============ CLASSES ==================================================================================================
-
-class GWG(NamedTuple):
-	"""Graphic associated with a gradient
-
-	graphic:
-		list of string lines
-	gradient:
-		list of ansi escape colors
-	"""
-	graphic: list[str]
-	gradient: list[str]
+from modules.utils import terminalsize
 
 
 #============ FUNCTIONS ================================================================================================
@@ -67,17 +51,19 @@ def fadegraphic(
 
 
 def fadegraphics(
-		*graphicswithgradient:GWG, delay:float=.125,
-		centered:bool=True, transpace:bool=False
+		*graphicswithgradient:tuple[list[str], list[str]],
+		delay:float=.125,
+		centered:bool=True,
+		transpace:bool=False
 	):
 	"""fade multiple graphics simultaneously with an associated list of colors
 	save the cursor position beforehand with escape code \\33[s for correct replacement
 	"""
 
-	for c in range(len(graphicswithgradient[0].gradient)): #--------------------for the number of colors in the first gradient
+	for color in range(len(graphicswithgradient[0][1])): #----------------------for the number of colors in the first gradient
 
-		for gg in graphicswithgradient: #---------------------------------------for each group of graphic
-			flushprint(f'\33[u\33[{gg.gradient[c]}m') #-------------------------reset cursor position and apply color in list
-			drawgraphic(gg.graphic, centered, transpace) #----------------------draw graphic on screen
+		for gwg in graphicswithgradient: #--------------------------------------for each group of graphic
+			flushprint(f'\33[u\33[{gwg[1][color]}m') #----------------------=---reset cursor position and apply color in list
+			drawgraphic(gwg[0], centered, transpace) #--------------------------draw graphic on screen
 
 		sleep(delay) #----------------------------------------------------------wait until drawing next frame

@@ -2,8 +2,6 @@ from os import system
 
 from modules.menus import MAIN_MENUS
 from modules.dialog import (
-	welcome,
-	seeyounextmission,
 	breadcrumbtrail,
 	menudialog,
 	header,
@@ -13,6 +11,10 @@ from modules.filemanagement import (
 	SelectionInfo,
 	mpfileselection,
 	mpselectionpreview
+)
+from modules.graphics.animations import (
+	welcome,
+	seeyounextmission
 )
 
 
